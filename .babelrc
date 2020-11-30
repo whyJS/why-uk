@@ -1,0 +1,15 @@
+{
+    "presets": [
+        [
+            "@babel/preset-env",
+            {
+                "targets": {
+                    "browsers": ["> 1%", "last 2 versions", "not ie <= 8"],
+                    "node": "current" // 根据当前 node 环境
+                },
+                "useBuiltIns": "usage",
+                "corejs": 3
+            }
+        ]
+    ]
+}

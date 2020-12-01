@@ -1,0 +1,1 @@
+var HBUkeySign = CfcaUkeySign.extend();

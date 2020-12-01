@@ -1,0 +1,1 @@
+var CITICIBUkeySign = CfcaUkeySign.extend();

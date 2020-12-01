@@ -1,0 +1,1 @@
+var CmbcUkey = CfcaUkey.extend();

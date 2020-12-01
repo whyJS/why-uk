@@ -1,0 +1,1 @@
+var CIBUkeySign = CfcaUkeySign.extend();

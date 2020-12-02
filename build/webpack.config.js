@@ -3,12 +3,11 @@
  * @Author: whyjs
  * @Date: 2020-09-21 13:45:11
  * @LastEditors: whyjs
- * @LastEditTime: 2020-12-02 14:13:51
+ * @LastEditTime: 2020-12-02 15:43:12
  */
 const path = require('path');
 const Webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-// const HappyPack = require('happypack');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 console.log('shell命令在process.argv每个空隔划分为数组的一项--: ');
 
@@ -35,33 +34,27 @@ module.exports = {
 
   module: {
     rules: [{
-        // test: /\.js$/,
-        // // use: {
-        // //   loader: "babel-loader"
-        // //   //   options: { // 看.babelrc
-        // //   //     presets: ["@babel/preset-env"]
-        // //   //   }
-        // // },
-        // // 将对.js文件的处理转交给id为babel的HappyPack的实列
-        // use: ['happypack/loader?id=babel'],
-        // include: [path.resolve(__dirname, 'src')],
-        // exclude: /node_modules/
-
-
         test: /\.js?$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {
             presets: [
-              ['@babel/preset-env']
+              ["@babel/preset-env",
+                {
+                  "targets": {
+                    "browsers": ["> 1%", "ie >= 8"],
+                    "node": "current" // 根据当前 node 环境
+                  },
+                  "useBuiltIns": "usage",
+                  "corejs": 3
+                }
+              ]
             ],
             plugins: [
               [
                 '@babel/plugin-transform-runtime'
-              ],
-              ['@babel/plugin-transform-modules-commonjs'],
-              ['@babel/plugin-transform-object-assign']
+              ]
             ]
           }
         }
@@ -84,12 +77,5 @@ module.exports = {
       template: path.resolve(__dirname, '../examples/index.html'),
       filename: 'index.html'
     }),
-    /** **   使用HappyPack实例化    *****/
-    // new HappyPack({
-    //   // 用唯一的标识符id来代表当前的HappyPack 处理一类特定的文件
-    //   id: 'babel',
-    //   // 如何处理.js文件，用法和Loader配置是一样的
-    //   loaders: ['babel-loader?cacheDirectory=true']
-    // })
   ]
 };

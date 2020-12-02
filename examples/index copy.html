@@ -1,0 +1,328 @@
+<!--
+ * @Descripttion: 
+ * @Author: whyjs
+ * @Date: 2020-09-21 13:45:11
+ * @LastEditors: whyjs
+ * @LastEditTime: 2020-12-01 16:17:12
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>CFCA eavic CryptoKit Demo</title>
+    <script src="../lib/index.js"></script>
+    <!--<object id="CryptoAgent" codebase="CryptoKit.eavic.x86.cab" classid="clsid:CD5A005D-5771-4B17-9ABC-68F38B6D4D6F"></object>-->
+    <script language="javascript" type="text/javascript">
+
+        // Create ActiveX object according to the platform
+        var CryptoAgent = "";
+        function OnLoad() {
+            try {
+                var eDiv = document.createElement("div");
+                    if (navigator.appName.indexOf("Internet") >= 0 || navigator.appVersion.indexOf("Trident") >= 0) {
+                        if (window.navigator.cpuClass == "x86") {
+                            eDiv.innerHTML = "<object id=\"CryptoAgent\" codebase=\"CryptoKit.eavic.x86.cab\" classid=\"clsid:CD5A005D-5771-4B17-9ABC-68F38B6D4D6F\" ></object>";
+                        }
+                        else {
+                            eDiv.innerHTML = "<object id=\"CryptoAgent\" codebase=\"CryptoKit.eavic.x64.cab\" classid=\"clsid:C4AAC63A-02DB-4ABE-BC5D-CFA1279B8115\" ></object>";
+                        }
+                    }
+                    else {
+                        alert("只支持IE浏览器");
+                    }
+                document.body.appendChild(eDiv);
+            }
+            catch (e) {
+                alert(e);
+                return;
+            }
+            CryptoAgent = document.getElementById("CryptoAgent");
+        }
+
+        function SelectObjctById(id) {
+
+            var obj;
+            if (document.getElementById) {
+                obj = document.getElementById(id);
+                //alert("ID");
+            }
+            else if (document.all) {
+                obj = document.all(id);
+                //alert("ALL");
+            }
+            else {
+                alert("The Internet Browser does't support Document all or Document getElementById");
+            }
+            return obj;
+        }
+
+        // Select certificate
+        function SelectCertificateOnClick() {
+            try {                  
+                    document.getElementById("SelectCertResult").value = "";
+
+                    var subjectDNFilter = "";
+                    var issuerDNFilter = "";
+                    var serialNumFilter = "";
+                    var bSelectCertResult = "";
+                    subjectDNFilter = document.getElementById("SubjectDNFilter").value;
+                    issuerDNFilter = document.getElementById("IssuerDNFilter").value;
+                    serialNumFilter = document.getElementById("SerialNumFilter").value;
+
+                    bSelectCertResult = CryptoAgent.SelectCertificate(subjectDNFilter, issuerDNFilter, serialNumFilter);                        
+                    // Opera浏览器，NPAPI函数执行结果为false时，不能触发异常，需要自己判断返回值。
+                    if (!bSelectCertResult) 
+                    {
+                        var errorDesc = CryptoAgent.GetLastErrorDesc();
+                        alert(errorDesc);
+                        return;
+                    }
+                    document.getElementById("SelectCertResult").value = bSelectCertResult;
+                 }                  
+         
+            catch (e) {
+                var errorDesc = CryptoAgent.GetLastErrorDesc();
+                alert(errorDesc);
+            }
+        }
+
+        // Get certificate information
+        function GetCertInfoOnClick() {
+            try {
+                var InfoTypeID = "";
+                var InfoContent = "";
+
+                document.getElementById("CertInfoContent").value = "";
+
+                // certificate information identifier
+                InfoTypeID = GetSelectedItemValue("InfoTypeID");
+
+                InfoContent = CryptoAgent.GetSignCertInfo(InfoTypeID);
+                // Opera浏览器，NPAPI函数执行结果为false时，不能触发异常，需要自己判断返回值。
+                if (!InfoContent) {
+                    var errorDesc = CryptoAgent.GetLastErrorDesc();
+                    alert(errorDesc);
+                    return;
+                }
+                document.getElementById("CertInfoContent").value = InfoContent;
+            } catch (e) {
+                var errorDesc = CryptoAgent.GetLastErrorDesc();
+                alert(errorDesc);
+            }
+        }    
+
+
+        // Sign message
+        function SignOnClick() {
+            try {
+                var selectedAlg = GetSelectedItemValue("algorithm");
+
+                    var source = "";
+                    var signature = "";
+                    var signType = "";
+
+                    document.getElementById("Signature").value = "";
+
+                    // source
+                    source = document.getElementById("SourceData").value;
+                    signType = GetSelectedItemValue("SignType");
+
+                    // certificate information identifier
+                    if ("Attach" == signType) {
+                        signature = CryptoAgent.SignMsgPKCS7(source, selectedAlg, true);
+                    }
+                    else {
+                        signature = CryptoAgent.SignMsgPKCS7(source, selectedAlg, false);
+                    }
+
+                    if (!signature) {
+                        var errorDesc = CryptoAgent.GetLastErrorDesc();
+                        alert(errorDesc);
+                        return;
+                    }
+                    document.getElementById("Signature").value = signature;
+            } catch (e) {
+                var errorDesc = CryptoAgent.GetLastErrorDesc();
+                alert(errorDesc);
+            }
+        }
+
+        function GetSelectedItemValue(itemName) {
+            var ele = document.getElementsByName(itemName);
+            for (i = 0; i < ele.length; i++) {
+                if (ele[i].checked) {
+                    return ele[i].value;
+                }
+            }
+        }       
+
+        function GetSelectedItemIndex(itemName) {
+            var ele = document.getElementsByName(itemName);
+            for (i = 0; i < ele.length; i++) {
+                if (ele[i].checked) {
+                    return i;
+                }
+            }
+        }
+
+
+    </script>
+</head>
+<body onload="javascript:OnLoad();">
+  
+    <table border="0" cellpadding="0" cellspacing="0">
+    <tr>
+    <td>
+    <h1>消息签名与验签</h1>
+    </td>
+    </tr>
+    </table>
+    <tr>
+        <td colspan="2">
+        <table id="no1" border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+        <td height="30">
+        证书主题DN：
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <input type="text" id="SubjectDNFilter" style="width: 650px">
+        </td>
+        </tr>
+        <tr>
+        <td height="30">
+        颁发者主题DN：
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <input type="text" id="IssuerDNFilter" style="width: 650px">
+        </td>
+        </tr>
+        <tr>
+        <td height="30">
+        证书序列号：
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <input type="text" id="SerialNumFilter" style="width: 650px">
+        </td>
+        </tr>
+        <tr>
+        <td height="30">
+        <input type="button" name="SelectCertificateButton" value="Select certificate [选择证书]"
+        onclick="SelectCertificateOnClick()">
+        </td> 
+        </tr>
+        <tr>
+        <td height="30">
+        选择证书结果(返回值)：
+        </td>
+        </tr>
+        <tr>
+        <td> 
+        <input type="text" id="SelectCertResult" style="width: 650px">
+        </td>        
+        </tr>   
+                <td height="30">
+        <h3>
+            获取选定证书的信息</h3>
+        </td>
+        <tr>
+        <td height="30">
+            信息类型标识：
+        </td>
+        </tr>
+        <tr>
+        <td height="30">
+            <input type="radio" name="InfoTypeID" value="SubjectDN" checked="checked" />SubjectDN
+            <input type="radio" name="InfoTypeID" value="SubjectCN" />SubjectCN
+            <input type="radio" name="InfoTypeID" value="IssuerDN" />IssuerDN
+            <input type="radio" name="InfoTypeID" value="SerialNumber" />SerialNumber
+            <input type="radio" name="InfoTypeID" value="CSPName" />CSPName
+        </td>
+        </tr>        
+        <tr>
+        <td height="30">
+            <input type="button" name="GetCertInfoButton" value="Get Cert Information [获取证书信息]" onclick="GetCertInfoOnClick()">
+        </td>
+        </tr>
+        <tr>
+        <td height="30">
+        证书信息(返回值)：
+        </td>
+        </tr>      
+        <tr>
+        <td >
+        <textarea id="CertInfoContent" rows="8" style="width: 650px">
+        </textarea>
+        </td>
+        </tr>  
+  
+        </table>
+        </td> 
+        </tr>          
+     <hr />
+    <label>
+        <h3>
+            签名</h3>
+    </label>
+                <td colspan="2">
+            <table id="source_no1" border="0" cellpadding="0" cellspacing="0" width="60%">
+                <tr>
+                    <td height="30" class="style5">
+        签名原文：
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+        <textarea id="SourceData" rows="8" style="width: 650px">
+</textarea>
+                    </td>
+                </tr>
+                            </table>
+                            </td>
+    <br />
+    <label>
+        <td>
+            签名类型：
+        </td>
+    </label>
+        <td>
+            <input type="radio" name="SignType" value="Attach" checked="checked" />PKCS#7带原文签名
+            <input type="radio" name="SignType" value="Detach" />PKCS#7不带原文签名
+        </td>
+    <br />
+    <label>
+        <td>
+            哈希算法：
+        </td>
+    </label>
+        <td>
+            <input type="radio" name="algorithm" checked="checked" value="SHA-1" />SHA-1
+            <input type="radio" name="algorithm" value="SHA-256" />SHA-256          
+        </td>
+    <br />
+    <br />
+    <label>
+        <td>
+            <input type="button" name="SignButton" value="Sign[签名]" onclick="SignOnClick()">
+        </td>
+    </label>
+    <br />
+    <br />
+    <label>
+        签名结果：
+        <br />
+        <textarea id="Signature" rows="8" style="width: 650px"></textarea>
+    </label>
+    <br />
+
+    <script>
+      var add = npmJSDemo.add;
+      var result = add(1, 2);
+      console.log('result', result);
+    </script>
+</body>
+</html>

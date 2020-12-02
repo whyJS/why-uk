@@ -3,7 +3,7 @@
  * @Author: whyjs
  * @Date: 2020-09-21 13:45:11
  * @LastEditors: whyjs
- * @LastEditTime: 2020-12-01 15:43:56
+ * @LastEditTime: 2020-12-02 13:56:10
  */
 const Webpack = require('webpack')
 const webpackConfig = require('./webpack.config.js')

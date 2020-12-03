@@ -3,7 +3,7 @@
  * @Author: whyjs
  * @Date: 2020-09-21 13:45:11
  * @LastEditors: whyjs
- * @LastEditTime: 2020-12-03 09:52:37
+ * @LastEditTime: 2020-12-03 20:19:51
  */
 const path = require('path');
 const Webpack = require('webpack');
@@ -17,7 +17,7 @@ module.exports = {
     filename: 'index.js', // 打包后的文件名称
     path: path.resolve(__dirname, '../lib'), // 打包后的目录
     libraryTarget: 'umd',
-    library: 'npmJSDemo', // 直接浏览器引用时在window的key
+    library: 'hxUkeySDK', // 直接浏览器引用时在window的key
   },
   optimization: {
     minimizer: [

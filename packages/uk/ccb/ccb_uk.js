@@ -3,7 +3,7 @@
  * @Author: whyjs
  * @Date: 2020-12-02 17:31:27
  * @LastEditors: whyjs
- * @LastEditTime: 2020-12-03 14:33:59
+ * @LastEditTime: 2020-12-03 19:22:01
  */
 import BaseUkey from '../base/base_uk.js'
 
@@ -73,8 +73,7 @@ export default class CcbUkey extends BaseUkey {
   //证书签名(供页面调用)
   sign(ukeySenceSignObject) {
     ukeySenceSignObject.isDirectCall = true;
-    var original = ukeySenceSignObject.signedOriginal;
-    // var result = {};
+    var original = ukeySenceSignObject.signedOriginal; //原文
     var params = {};
     try {
       if (
@@ -128,13 +127,14 @@ export default class CcbUkey extends BaseUkey {
       var json = JSON.stringify(params);
       json = encodeURIComponent(json);
       ukeySenceSignObject.ukeyObject = json;
-      if (this.isHasAttr(ukeySenceSignObject, "callBackParams")) {
-        if (this.isHasAttr(ukeySenceSignObject.callBackParams, "params")) {
+      if (super.isHasAttr(ukeySenceSignObject, "callBackParams")) {
+        if (super.isHasAttr(ukeySenceSignObject.callBackParams, "params")) {
           ukeySenceSignObject.callBackParams.params.issureDn = params.issureDn;
         }
       }
-      if (this.isHasAttr(ukeySenceSignObject, "callBackParams")) {
-        if (this.isHasAttr(ukeySenceSignObject.callBackParams, "ukeyParams")) {
+
+      if (super.isHasAttr(ukeySenceSignObject, "callBackParams")) {
+        if (super.isHasAttr(ukeySenceSignObject.callBackParams, "ukeyParams")) {
           ukeySenceSignObject.callBackParams.ukeyParams.issureDn =
             params.issureDn;
         }

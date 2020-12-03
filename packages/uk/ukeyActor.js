@@ -3,7 +3,7 @@
  * @Author: whyjs
  * @Date: 2020-12-02 17:31:27
  * @LastEditors: whyjs
- * @LastEditTime: 2020-12-03 15:26:09
+ * @LastEditTime: 2020-12-03 20:18:02
  */
 import bankUkeyFactory from './bankUkeyFactory'
 
@@ -16,10 +16,12 @@ export default class ukeyActor {
     ukeySenceSignObject.signedCallBack = signedCallBack;
     //获取银行ukey操作的基础组件
     let ukey = this.ukeyfactory.getUkeyAction(bankCode);
-    //获取银行ukey签名基础组件
-    let ukeySign = this.ukeyfactory.getUkeySignAction(bankCode);
-    //根据不同的业务场景设置需要签名的原文内容
-    ukeySign.setSignedOriginal(ukeySenceSignObject);
+
+    // //获取银行ukey签名基础组件
+    // let ukeySign = this.ukeyfactory.getUkeySignAction(bankCode);
+    // //根据不同的业务场景设置需要签名的原文内容
+    // ukeySign.setSignedOriginal(ukeySenceSignObject);
+
     //进行银行ukey的签名操作
     let signature = ukey.sign(ukeySenceSignObject);
     //设置签名内容

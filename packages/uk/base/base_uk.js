@@ -3,13 +3,25 @@
  * @Author: whyjs
  * @Date: 2020-12-02 17:31:27
  * @LastEditors: whyjs
- * @LastEditTime: 2020-12-03 14:34:15
+ * @LastEditTime: 2020-12-03 19:23:17
  */
 import md5 from 'js-md5'
 
 export default class BaseUkey {
   constructor() {
 
+  }
+  /**
+   * 是否有对象属性
+   */
+  isHasAttr(obj, attr) {
+    //判断是否有该键值
+    // eslint-disable-next-line no-prototype-builtins
+    if (obj && obj.hasOwnProperty(attr)) {
+      //如果有返回true
+      return true;
+    }
+    return false;
   }
   generateUUID() {
     var d = new Date().getTime();

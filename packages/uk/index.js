@@ -7,7 +7,7 @@ function getUkeyParams(bankUkeyParamsObject) {
 
 function signCallBack(bankCode, ukeySenceSignObject, signedCallBack) {
   let ukeyActorClass = new ukeyActor()
-  return ukeyActorClass.getUkeyParams(bankCode, ukeySenceSignObject, signedCallBack)
+  return ukeyActorClass.signCallBack(bankCode, ukeySenceSignObject, signedCallBack)
 }
 
 export {

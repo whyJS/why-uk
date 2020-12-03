@@ -3,7 +3,7 @@
  * @Author: whyjs
  * @Date: 2020-09-21 13:45:11
  * @LastEditors: whyjs
- * @LastEditTime: 2020-12-02 15:57:28
+ * @LastEditTime: 2020-12-03 15:34:22
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -18,9 +18,12 @@
 <body>
   <h1>纯js的npm发布包</h1>
   <script>
-    console.log(npmJSDemo)
-    npmJSDemo.add().then(function (res) {
-      console.log(res)
+    // var xx = npmJSDemo.getUkeyParams('SX9DWSCX-73VB-4C27-9519-36SWCFB412B3')
+    var ukeySenceSignObject = {}
+    npmJSDemo.signCallBack('SX9DWSCX-73VB-4C27-9519-36SWCFB412B3', ukeySenceSignObject, function () {
+      console.log("%%%%%%%%%%%")
+      console.log(ukeySenceSignObject)
+
     })
   </script>
 </body>

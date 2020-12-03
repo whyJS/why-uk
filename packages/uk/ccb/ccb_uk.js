@@ -1,86 +1,87 @@
-var ccbUkeyAction = function () {
-  //CCBCA控件
-  var CCB_GMSignCtl;
-  //签名策略
-  var signatureRules;
-  //ukey编号
-  var ukeySn;
-  //浏览器类型
-  var Sys = {};
+/*
+ * @Descripttion: 建行UK类
+ * @Author: whyjs
+ * @Date: 2020-12-02 17:31:27
+ * @LastEditors: whyjs
+ * @LastEditTime: 2020-12-03 14:33:59
+ */
+import BaseUkey from '../base/base_uk.js'
 
-  function isHasAttr(obj, attr) {
-    //判断是否有该键值
-    if (obj && obj.hasOwnProperty(attr)) {
-      //如果有返回true
-      return true;
-    }
-    return false;
+//CCBCA控件
+let CCB_GMSignCtl;
+//签名策略
+let signatureRules
+//ukey编号
+let ukeySn
+//浏览器类型
+let Sys = {}
+
+export default class CcbUkey extends BaseUkey {
+  constructor() {
+    super()
+    this.init()
   }
-  this.init = function () {
+  init() {
     var ua = navigator.userAgent.toLowerCase();
     var s;
+    // eslint-disable-next-line no-cond-assign
     (s = ua.match(/(msie\s|trident.*rv:)([\w.]+)/)) ?
     (Sys.ie = s[2] || "0") :
+    // eslint-disable-next-line no-cond-assign
     (s = ua.match(/firefox\/([\d.]+)/)) ?
-    (Sys.firefox = s[1]) :
+    (this.Sys.firefox = s[1]) :
+    // eslint-disable-next-line no-cond-assign
     (s = ua.match(/chrome\/([\d.]+)/)) ?
     (Sys.chrome = s[1]) :
+    // eslint-disable-next-line no-cond-assign
     (s = ua.match(/opera.([\d.]+)/)) ?
-    (Sys.opera = s[1]) :
+    (this.Sys.opera = s[1]) :
+    // eslint-disable-next-line no-cond-assign
     (s = ua.match(/version\/([\d.]+).*safari/)) ?
     (Sys.safari = s[1]) :
     0;
-    obtainTheSignatureRules();
-  };
+    this.obtainTheSignatureRules();
+  }
 
   //获取证书序列号(供页面调用)
-  this.getSerialNumber = function (bankUkeyParamsObject) {
-    var result = {};
-    var params = {};
+  getSerialNumber(bankUkeyParamsObject) {
+    let params = {};
     try {
-      var info = getUkeySN();
+      let info = this.getUkeySN();
+      // eslint-disable-next-line valid-typeof
       if (!info || typeof info == "undefined" || typeof info == "unknown") {
-        bankUkeyParamsObject.serialNo = "";
         //alert("请重新插入建行UKEY，如有疑问请联系客服！");
         return "";
       }
 
       if (info == "-2") {
-        bankUkeyParamsObject.serialNo = "";
         //alert("请重新插入建行UKEY，如有疑问请联系客服！");
         return "";
       }
-      bankUkeyParamsObject.serialNo = info;
       params.serialNo = info;
       params.issureDn = "CCBCA";
       params.eventCode = bankUkeyParamsObject.eventCode;
-      var algorithmType = this.getUkeyAlgorithmType();
-      params.algorithmType = algorithmType;
+      params.algorithmType = this.getUkeyAlgorithmType();
       params.caIssuer = "RA_CCB";
-      var json = JSON.stringify(params);
-      json = encodeURIComponent(json);
-      bankUkeyParamsObject.ukeyObject = json;
-      bankUkeyParamsObject.issureDn = "CCBCA";
-      bankUkeyParamsObject.algorithmType = algorithmType;
-      bankUkeyParamsObject.caIssuer = "RA_CCB";
       return info;
     } catch (e) {
       alert("获取序列号失败");
       return "";
     }
-  };
+  }
 
   //证书签名(供页面调用)
-  this.sign = function (ukeySenceSignObject) {
+  sign(ukeySenceSignObject) {
     ukeySenceSignObject.isDirectCall = true;
     var original = ukeySenceSignObject.signedOriginal;
-    var result = {};
+    // var result = {};
     var params = {};
     try {
       if (
         !original ||
         original == "" ||
         typeof original == "undefined" ||
+        // eslint-disable-next-line valid-typeof
         typeof original == "unknown"
       ) {
         alert("签名原文不能为空，签名失败。请联系客服。");
@@ -93,11 +94,12 @@ var ccbUkeyAction = function () {
         }
         return "签名失败";
       }
-      var signature = ccbcaSign(original);
+      var signature = this.ccbcaSign(original);
 
       if (
         !signature ||
         typeof signature == "undefined" ||
+        // eslint-disable-next-line valid-typeof
         typeof signature == "unknown"
       ) {
         alert("获取签名内容为空，签名失败。请联系客服。");
@@ -111,7 +113,7 @@ var ccbUkeyAction = function () {
         return "签名失败";
       }
       ukeySenceSignObject.signature = signature;
-      ukeySenceSignObject.ukeyNo = getUkeySN();
+      ukeySenceSignObject.ukeyNo = this.getUkeySN();
       ukeySenceSignObject.isSuccess = true;
 
       params.serialNo = ukeySenceSignObject.ukeyNo;
@@ -126,13 +128,13 @@ var ccbUkeyAction = function () {
       var json = JSON.stringify(params);
       json = encodeURIComponent(json);
       ukeySenceSignObject.ukeyObject = json;
-      if (isHasAttr(ukeySenceSignObject, "callBackParams")) {
-        if (isHasAttr(ukeySenceSignObject.callBackParams, "params")) {
+      if (this.isHasAttr(ukeySenceSignObject, "callBackParams")) {
+        if (this.isHasAttr(ukeySenceSignObject.callBackParams, "params")) {
           ukeySenceSignObject.callBackParams.params.issureDn = params.issureDn;
         }
       }
-      if (isHasAttr(ukeySenceSignObject, "callBackParams")) {
-        if (isHasAttr(ukeySenceSignObject.callBackParams, "ukeyParams")) {
+      if (this.isHasAttr(ukeySenceSignObject, "callBackParams")) {
+        if (this.isHasAttr(ukeySenceSignObject.callBackParams, "ukeyParams")) {
           ukeySenceSignObject.callBackParams.ukeyParams.issureDn =
             params.issureDn;
         }
@@ -155,12 +157,12 @@ var ccbUkeyAction = function () {
         return "签名失败";
       }
     }
-  };
+  }
 
   /**
    * 获取签名策略
    */
-  function obtainTheSignatureRules() {
+  obtainTheSignatureRules() {
     var text =
       '{"G":"2|1|259|GM|1.2.156.10197.1.401","H":"2|1|259|GM|1.2.156.10197.1.401","I":"2|1|259|GM|1.2.156.10197.1.401","J":"0|3|257|GR|1.3.14.3.2.26","K":"0|0|260|GS|1.19.30.19.18.42"}';
     signatureRules = text;
@@ -169,20 +171,22 @@ var ccbUkeyAction = function () {
   /**
    * 获取网银盾序列号方法
    */
-  function getUkeySN() {
+  getUkeySN() {
     var ukeySnResult = "";
     var ukeyProduct = new Array("11", "21", "31", "41", "51");
     for (var i = 0; i < ukeyProduct.length; i++) {
-      createObject(ukeyProduct[i]);
+      this.createObject(ukeyProduct[i]);
       try {
         var wdk = document.getElementById("wdk");
         var s = wdk.GetMediaID;
         if (
           ukeyProduct[i] &&
           typeof s != "undefined" &&
+          // eslint-disable-next-line valid-typeof
           typeof s != "unknown"
         ) {
           var sn = Sys.ie ? wdk.GetMediaID : wdk.GetMediaID();
+          // eslint-disable-next-line valid-typeof
           if (sn != "" && typeof sn != "undefined" && typeof sn != "unknown") {
             ukeySnResult = ukeySnResult + sn + "|";
             break;
@@ -200,19 +204,19 @@ var ccbUkeyAction = function () {
   /**
    * 网银盾签名
    */
-  function ccbcaSign(original) {
-    if (isECCkey(signatureRules)) {
-      createECCSignObject(); //创建国密盾签名控件
-      return SignData(original, signatureRules);
+  ccbcaSign(original) {
+    if (this.isECCkey(signatureRules)) {
+      this.createECCSignObject(); //创建国密盾签名控件
+      return this.SignData(original, signatureRules);
     } else {
-      createSignObject(); //创建存量盾签名控件
-      return DetachedSign(original);
+      this.createSignObject(); //创建存量盾签名控件
+      return this.DetachedSign(original);
     }
   }
   /**
    * 创建获取序列号控件对象
    */
-  function createObject(obj) {
+  createObject(obj) {
     var isExitDiv = true;
     var ccbcaDiv = document.getElementById("ccbcadiv");
     if (ccbcaDiv == null) {
@@ -270,7 +274,7 @@ var ccbUkeyAction = function () {
   /**
    * 根据网银盾序列号判断UKEY类型
    */
-  function isECCkey(rule) {
+  isECCkey(rule) {
     var flag = "";
     try {
       rule = JSON.parse(rule);
@@ -278,7 +282,7 @@ var ccbUkeyAction = function () {
       alert("国密盾签名规则查询失败");
       return;
     }
-    ukeySn = getUkeySN();
+    ukeySn = this.getUkeySN();
     var length = ukeySn.length;
     var result = ukeySn.substr(2, 1);
     if (length == 12 && rule[result] !== undefined) {
@@ -292,7 +296,7 @@ var ccbUkeyAction = function () {
   /**
    * 国密盾签名方法
    */
-  function SignData(original, rule) {
+  SignData(original, rule) {
     var signature = "";
     try {
       rule = JSON.parse(rule);
@@ -336,7 +340,7 @@ var ccbUkeyAction = function () {
   /**
    * 存量盾签名方法
    */
-  function DetachedSign(original) {
+  DetachedSign(original) {
     var signature = "";
     if (original) {
       try {
@@ -356,7 +360,7 @@ var ccbUkeyAction = function () {
   /**
    * 创建国密盾签名控件对象
    */
-  function createECCSignObject() {
+  createECCSignObject() {
     var ccbcaCT = document.createElement("ccbcact");
     ccbcaCT.style.height = 0;
     ccbcaCT.style.width = 0;
@@ -374,7 +378,7 @@ var ccbUkeyAction = function () {
   /**
    * 创建存量盾签名控件对象
    */
-  function createSignObject() {
+  createSignObject() {
     var ccbcaCT = document.createElement("ccbcact");
     ccbcaCT.style.height = 0;
     ccbcaCT.style.width = 0;
@@ -394,52 +398,25 @@ var ccbUkeyAction = function () {
    * 工程航信平台添加该方法
    * 获取Ukey参数,ukey序列号及ukey颁发者
    */
-  (this.getUkeyParams = function (bankUkeyParamsObject) {
-    var params = {};
-    var serialNo = this.getSerialNumber(bankUkeyParamsObject);
+  getUkeyParams(bankUkeyParamsObject) {
+    let params = {};
+    let serialNo = this.getSerialNumber(bankUkeyParamsObject);
     if (serialNo.indexOf("证书没有准备好") != -1 || serialNo == "") {
       alert("请重新插入建行UKEY，如有疑问请联系客服！");
       return false;
     }
     params.serialNo = serialNo;
     params.issureDn = "CCBCA";
-    var algorithmType = this.getUkeyAlgorithmType();
-    params.algorithmType = algorithmType;
+    params.algorithmType = this.getUkeyAlgorithmType();
     params.caIssuer = "RA_CCB";
-    bankUkeyParamsObject.serialNo = serialNo;
-    var json = JSON.stringify(params);
-    json = encodeURIComponent(json);
-    bankUkeyParamsObject.ukeyObject = json;
-    bankUkeyParamsObject.issureDn = "CCBCA";
-    bankUkeyParamsObject.algorithmType = algorithmType;
-    bankUkeyParamsObject.caIssuer = "RA_CCB";
-
     return params;
-  }),
+  }
   //获取加密算法
-  (this.getUkeyAlgorithmType = function () {
-    if (true == isECCkey(signatureRules)) {
+  getUkeyAlgorithmType() {
+    if (true == this.isECCkey(signatureRules)) {
       return "ALG_SM2";
     } else {
       return "ALG_RSA";
     }
-  });
-};
-/**
- * ukey相关继承操作
- */
-var CcbUkey = BaseUkey.extend({
-  init: function () {
-    this.ukeyAction = new ccbUkeyAction();
-    this.ukeyAction.init();
-  },
-  getSerialNumber: function (bankUkeyParamsObject) {
-    return this.ukeyAction.getSerialNumber(bankUkeyParamsObject);
-  },
-  sign: function (ukeySenceSignObject) {
-    return this.ukeyAction.sign(ukeySenceSignObject);
-  },
-  getUkeyParams: function (bankUkeyParamsObject) {
-    return this.ukeyAction.getUkeyParams(bankUkeyParamsObject);
   }
-});
+}

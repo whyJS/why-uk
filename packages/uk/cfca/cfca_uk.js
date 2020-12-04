@@ -1,29 +1,34 @@
-var CfcaUkeyAction = function () {
-  this.isHasAttr = function (obj, attr) {
-    //判断是否有该键值
-    if (obj && obj.hasOwnProperty(attr)) {
-      //如果有返回true
-      return true;
-    }
-    return false;
+/*
+ * @Descripttion:CFCA UK类
+ * @Author: whyjs
+ * @Date: 2020-12-02 17:31:27
+ * @LastEditors: whyjs
+ * @LastEditTime: 2020-12-04 16:40:50
+ */
+import BaseUkey from '../base/base_uk.js'
+import $ from 'jquery'
+var Confirm = require('web-confirm');
 
-  };
+
+export default class CfcaUkey extends BaseUkey {
+  constructor() {
+    super()
+    // this.init()
+  }
   //获取证书序列号(供页面调用)
-  this.getSerialNumber = function (bankUkeyParamsObject) {
-    var result = {};
+  getSerialNumber(bankUkeyParamsObject) {
     try {
-
-      var cryptoAgent = ukeyInitCryptoAgent();
+      var cryptoAgent = this.ukeyInitCryptoAgent();
       if (!cryptoAgent) {
-        var flag = downLoad();
+        var flag = this.downLoad();
         if (flag == false) {
           return "";
         }
       }
-      var params = getUkeySN(cryptoAgent);
+      var params = this.getUkeySN(cryptoAgent);
       var issuerDn = params.issuerDn;
       issuerDn = issuerDn.toUpperCase();
-      if (issuerDn.match("CFCA")) {} else {
+      if (!issuerDn.match("CFCA")) {
         alert("您选择的UKEY证书与对应的银行机构不匹配,请重新选择。如有疑问请联系客服。");
         return "获取序列号失败";
       }
@@ -46,16 +51,17 @@ var CfcaUkeyAction = function () {
       alert("请重新插入UKEY，如有疑问请联系客服！");
       return "获取序列号失败";
     }
-  };
+  }
 
   //证书签名(供页面调用)
-  this.sign = function (ukeySenceSignObject) {
-    var result = {};
+  sign(ukeySenceSignObject) {
+    // var result = {};
     var params = {};
     var original = ukeySenceSignObject.signedOriginal;
     try {
       if ((!original) || (original == "") ||
         (typeof original == "undefined") ||
+        // eslint-disable-next-line valid-typeof
         (typeof original == "unknown")) {
         ukeySenceSignObject.signature = "签名失败";
         if (ukeySenceSignObject.signedCallBack != null) {
@@ -65,35 +71,35 @@ var CfcaUkeyAction = function () {
           return "签名失败";
         }
       }
-      var cryptoAgent = ukeyInitCryptoAgent();
+      var cryptoAgent = this.ukeyInitCryptoAgent();
       if (!cryptoAgent) {
-        var flag = downLoad();
+        var flag = this.downLoad();
         if (flag == false) {
           return "";
         }
       }
       //获取ukey序列号
-      var serialNo = getCertInfo('SerialNumber', cryptoAgent);
+      var serialNo = this.getCertInfo('SerialNumber', cryptoAgent);
 
       params.serialNo = serialNo;
       //获取ukey颁发者
-      params.issuerDn = getCertInfo('IssuerDn', cryptoAgent);
+      params.issuerDn = this.getCertInfo('IssuerDn', cryptoAgent);
       var issuerDn = params.issuerDn;
       issuerDn = issuerDn.toUpperCase();
-      if (issuerDn.match("CFCA")) {} else {
+      if (!issuerDn.match("CFCA")) {
         alert("您选择的UKEY证书与对应的银行机构不匹配,请重新选择。如有疑问请联系客服。");
         return "签名失败";
       }
 
-      params.remark = getCertInfo('SubjectDN', cryptoAgent);
-      params.subjectDN = getCertInfo('SubjectDN', cryptoAgent);
-      params.subjectCN = getCertInfo('SubjectCN', cryptoAgent);
-      params.cspName = getCertInfo('CSPName', cryptoAgent);
+      params.remark = this.getCertInfo('SubjectDN', cryptoAgent);
+      params.subjectDN = this.getCertInfo('SubjectDN', cryptoAgent);
+      params.subjectCN = this.getCertInfo('SubjectCN', cryptoAgent);
+      params.cspName = this.getCertInfo('CSPName', cryptoAgent);
       params.eventCode = ukeySenceSignObject.eventCode;
       params.eventNode = ukeySenceSignObject.eventNode;
       //
       params.signedOriginal = ukeySenceSignObject.signedOriginal;
-      var signature = cfcaSign(original, cryptoAgent);
+      var signature = this.cfcaSign(original, cryptoAgent);
 
       params.signature = signature;
       var json = JSON.stringify(params);
@@ -103,13 +109,13 @@ var CfcaUkeyAction = function () {
       ukeySenceSignObject.signature = signature;
       ukeySenceSignObject.ukeyNo = serialNo;
       ukeySenceSignObject.isSuccess = true;
-      if (isHasAttr(ukeySenceSignObject, "callBackParams")) {
-        if (isHasAttr(ukeySenceSignObject.callBackParams, "params")) {
+      if (super.isHasAttr(ukeySenceSignObject, "callBackParams")) {
+        if (super.isHasAttr(ukeySenceSignObject.callBackParams, "params")) {
           ukeySenceSignObject.callBackParams.params.issureDn = params.issuerDn;
         }
       }
-      if (isHasAttr(ukeySenceSignObject, "callBackParams")) {
-        if (isHasAttr(ukeySenceSignObject.callBackParams, "ukeyParams")) {
+      if (super.isHasAttr(ukeySenceSignObject, "callBackParams")) {
+        if (super.isHasAttr(ukeySenceSignObject.callBackParams, "ukeyParams")) {
           ukeySenceSignObject.callBackParams.ukeyParams.issureDn = params.issuerDn;
         }
       }
@@ -128,21 +134,21 @@ var CfcaUkeyAction = function () {
         return "签名失败";
       }
     }
-  };
+  }
 
 
   //获取Ukey参数,ukey序列号及ukey颁发者
-  this.getCfcaUkeyParams = function (bankUkeyParamsObject) {
-    var cryptoAgent = ukeyInitCryptoAgent();
+  getUkeyParams(bankUkeyParamsObject) {
+    var cryptoAgent = this.ukeyInitCryptoAgent();
     if (!cryptoAgent) {
-      var flag = downLoad();
+      var flag = this.downLoad();
       if (flag == false) {
         return false;
       }
     }
     var params = {};
     //判断是否插入Ukey
-    var test = selectCert('', '', '', cryptoAgent);
+    var test = this.selectCert('', '', '', cryptoAgent);
     var selectedCert = test;
     if (test != true && test.indexOf('证书库中没有可用的证书') != -1) {
       alert("请您插入Ukey！");
@@ -151,7 +157,7 @@ var CfcaUkeyAction = function () {
       return false;
     }
     //获取ukey序列号
-    var serialNo = getCertInfo('SerialNumber', cryptoAgent);
+    var serialNo = this.getCertInfo('SerialNumber', cryptoAgent);
     if (serialNo.indexOf('证书没有准备好') != -1) {
       alert("请您选择Ukey证书！");
       bankUkeyParamsObject.serialNo = "";
@@ -160,19 +166,19 @@ var CfcaUkeyAction = function () {
     }
     params.serialNo = serialNo;
     //获取ukey颁发者
-    params.issuerDn = getCertInfo('IssuerDn', cryptoAgent);
+    params.issuerDn = this.getCertInfo('IssuerDn', cryptoAgent);
     var issuerDn = params.issuerDn;
     issuerDn = issuerDn.toUpperCase();
-    if (issuerDn.match("CFCA")) {} else {
+    if (!issuerDn.match("CFCA")) {
       alert("您选择的UKEY证书与对应的银行机构不匹配,请重新选择。如有疑问请联系客服。");
       return false;
     }
 
-    params.remark = getCertInfo('SubjectDN', cryptoAgent);
-    params.subjectDN = getCertInfo('SubjectDN', cryptoAgent);
-    params.subjectCN = getCertInfo('SubjectCN', cryptoAgent);
-    params.cspName = getCertInfo('CSPName', cryptoAgent);
-    params.certSN = getCertInfo('CertSN', cryptoAgent);
+    params.remark = this.getCertInfo('SubjectDN', cryptoAgent);
+    params.subjectDN = this.getCertInfo('SubjectDN', cryptoAgent);
+    params.subjectCN = this.getCertInfo('SubjectCN', cryptoAgent);
+    params.cspName = this.getCertInfo('CSPName', cryptoAgent);
+    params.certSN = this.getCertInfo('CertSN', cryptoAgent);
 
     params.eventCode = bankUkeyParamsObject.eventCode;
     params.eventNode = bankUkeyParamsObject.eventNode;
@@ -183,7 +189,7 @@ var CfcaUkeyAction = function () {
     bankUkeyParamsObject.ukeyObject = json;
     params.selectedCert = selectedCert;
     return params;
-  };
+  }
 
   //============================内置接口说明（共4个）========================================
   //SelectCertificate();通过传入的字符串作为DN的筛选条件，选择出符合DN条件的带私钥的RSA签名证书。
@@ -200,7 +206,7 @@ var CfcaUkeyAction = function () {
 
 
   //初始化 Ukey 内置JS函数的对象
-  function ukeyInitCryptoAgent() {
+  ukeyInitCryptoAgent() {
     var CryptoAgent;
     try {
       var eDiv = document.createElement("div");
@@ -217,7 +223,9 @@ var CfcaUkeyAction = function () {
       }
       document.body.appendChild(eDiv);
       CryptoAgent = document.getElementById('CryptoAgent');
+      console.log('GetLastErrorDesc')
       CryptoAgent.GetLastErrorDesc();
+      console.log('GetLastErrorDesc,.....')
       return CryptoAgent;
     } catch (e) {
       return false;
@@ -225,7 +233,7 @@ var CfcaUkeyAction = function () {
   }
 
   //选择证书,主要用来判断是否插入Ukey
-  function selectCert(subjectDNFilter, issuerDNFilter, serialNumFilter, CryptoAgent) {
+  selectCert(subjectDNFilter, issuerDNFilter, serialNumFilter, CryptoAgent) {
     var message; //返回错误信息
     try {
       var selectCert = CryptoAgent.SelectCertificate(subjectDNFilter, issuerDNFilter, serialNumFilter);
@@ -245,7 +253,7 @@ var CfcaUkeyAction = function () {
   }
 
   //获取序列号等相关信息 --SubjectDN, SubjectCN, SerialNumber, CSPName, CertType, IssuerDN
-  function getCertInfo(infoType, CryptoAgent) {
+  getCertInfo(infoType, CryptoAgent) {
     var message; //返回错误信息
     try {
       var info = CryptoAgent.GetSignCertInfo(infoType);
@@ -265,20 +273,20 @@ var CfcaUkeyAction = function () {
   }
 
   //前端加密
-  function cfcaSign(original, CryptoAgent) {
+  cfcaSign(original, CryptoAgent) {
     var errBool = false;
     //异常处理
     var exception;
     // 签名Hash算法 SHA-1
     try {
-      return cfcaSHA1Sign(original, CryptoAgent);
+      return this.cfcaSHA1Sign(original, CryptoAgent);
     } catch (ex) {
       errBool = true;
       exception = ex;
     }
     // 签名Hash算法 MD5
     try {
-      return cfcaMD5Sign(original, CryptoAgent);
+      return this.cfcaMD5Sign(original, CryptoAgent);
     } catch (ex) {
       errBool = true;
       exception = ex;
@@ -286,7 +294,7 @@ var CfcaUkeyAction = function () {
 
     //签名Hash算法 SHA256
     try {
-      return cfcaSHA256Sign(original, CryptoAgent);
+      return this.cfcaSHA256Sign(original, CryptoAgent);
     } catch (ex) {
       errBool = true;
       exception = ex;
@@ -305,7 +313,7 @@ var CfcaUkeyAction = function () {
   /**
    * 签名Hash算法 SHA-1
    */
-  function cfcaSHA1Sign(original, CryptoAgent) {
+  cfcaSHA1Sign(original, CryptoAgent) {
     try {
       var hashAlg = 'SHA-1';
       var signature = CryptoAgent.SignMsgPKCS7(original, hashAlg, true);
@@ -325,7 +333,7 @@ var CfcaUkeyAction = function () {
   /**
    * 签名Hash算法 SHA-256
    */
-  function cfcaSHA256Sign(original, CryptoAgent) {
+  cfcaSHA256Sign(original, CryptoAgent) {
     try {
       var hashAlg = 'SHA-256';
       var signature = CryptoAgent.SignMsgPKCS7(original, hashAlg, true);
@@ -345,7 +353,7 @@ var CfcaUkeyAction = function () {
   /**
    * 签名Hash算法 MD-5
    */
-  function cfcaMD5Sign(original, CryptoAgent) {
+  cfcaMD5Sign(original, CryptoAgent) {
     try {
       var hashAlg = 'MD-5';
       var signature = CryptoAgent.SignMsgPKCS7(original, hashAlg, true);
@@ -365,28 +373,20 @@ var CfcaUkeyAction = function () {
 
 
   //前端下载证书控件
-  function downLoad(bootDialog) {
+  downLoad() {
     if (navigator.appName.indexOf('Internet') >= 0 || navigator.appVersion.indexOf('Trident') >= 0) {
       //20180726-STA-修改下载证书控件
-      var cfca_cancel = "取消";
-      var cfca_finish = "确定";
       var cfca_title = " UKey操作提示"
       var cfca_message = "请下载安装证书控件，安装完成后请重启浏览器！"
-      //弹出提示
-      bootbox.dialog({
-        message: cfca_message,
-        title: cfca_title,
-        closeButton: true,
-        buttons: {
-          OK: {
-            label: cfca_finish,
-            className: 'hxbtn orange',
-            callback: function () {
-              downloadFile('/rest/upload/v2/downUkey');
-            }
-          }
-        }
-      });
+      var bootbox = new Confirm(cfca_title, cfca_message, ['确定', "取消"], [function () {
+        this.downloadFile('/rest/upload/v2/downUkey');
+        bootbox.hide();
+      }, function () {
+        console.log('点击取消的回调');
+        bootbox.hide();
+      }]);
+      //调用show()方法
+      bootbox.show();
       //window.open(context+'/static/script/ukey/CryptoKit.eavic.exe');
     } else {
       alert("为保证系统正常使用，请使用Windows7及以上操作系统和IE10版本及以上的浏览器进行访问!");
@@ -396,45 +396,49 @@ var CfcaUkeyAction = function () {
 
 
   //获取Ukey参数,ukey序列号及ukey颁发者,签章专用的方法
-  function getUkeySN(cryptoAgent) {
+  getUkeySN(cryptoAgent) {
     var params = {};
     //判断是否插入Ukey
-    var test = selectCert('', '', '', cryptoAgent);
+    var test = this.selectCert('', '', '', cryptoAgent);
     if (test != true && test.indexOf('证书库中没有可用的证书') != -1) {
       alert("请您插入Ukey！");
       return false;
     }
     //获取ukey序列号
-    var serialNo = getCertInfo('SerialNumber', cryptoAgent);
+    var serialNo = this.getCertInfo('SerialNumber', cryptoAgent);
     if (serialNo.indexOf('证书没有准备好') != -1) {
       alert("请您选择Ukey证书！");
       return false;
     }
     params.serialNo = serialNo;
     //获取ukey颁发者
-    params.issuerDn = getCertInfo('IssuerDn', cryptoAgent);
-    params.remark = getCertInfo('SubjectDN', cryptoAgent);
-    params.subjectDN = getCertInfo('SubjectDN', cryptoAgent);
-    params.subjectCN = getCertInfo('SubjectCN', cryptoAgent);
-    params.cspName = getCertInfo('CSPName', cryptoAgent);
-    params.certSN = getCertInfo('CertSN', cryptoAgent);
+    params.issuerDn = this.getCertInfo('IssuerDn', cryptoAgent);
+    params.remark = this.getCertInfo('SubjectDN', cryptoAgent);
+    params.subjectDN = this.getCertInfo('SubjectDN', cryptoAgent);
+    params.subjectCN = this.getCertInfo('SubjectCN', cryptoAgent);
+    params.cspName = this.getCertInfo('CSPName', cryptoAgent);
+    params.certSN = this.getCertInfo('CertSN', cryptoAgent);
     return params;
   }
-};
-/**
- * ukey相关继承操作
- */
-var CfcaUkey = BaseUkey.extend({
-  init: function () {
-    this.ukeyAction = new CfcaUkeyAction();
-  },
-  getSerialNumber: function (bankUkeyParamsObject) {
-    return this.ukeyAction.getSerialNumber(bankUkeyParamsObject);
-  },
-  sign: function (ukeySenceSignObject) {
-    return this.ukeyAction.sign(ukeySenceSignObject);
-  },
-  getUkeyParams: function (bankUkeyParamsObject) {
-    return this.ukeyAction.getCfcaUkeyParams(bankUkeyParamsObject);
+
+
+  //20180726-STA-修改下载证书控件
+  downloadFile(url) {
+    console.log(url)
+    //定义一个form表单,通过form表单来发送请求
+    var form = $("<form>");
+    // //设置表单状态为不显示
+    form.attr("style", "display:none");
+
+    // //method属性设置请求类型为post
+    form.attr("method", "post");
+
+    // //action属性设置请求路径,
+    // //请求类型是post时,路径后面跟参数的方式不可用
+    // //可以通过表单中的input来传递参数
+    form.attr("action", url);
+    $("body").append(form); //将表单放置在web中
+    form.submit(); //表单提交
   }
-});
+  //20180726-END-修改下载证书控件
+}

@@ -3,7 +3,7 @@
  * @Author: whyjs
  * @Date: 2020-12-03 14:50:24
  * @LastEditors: whyjs
- * @LastEditTime: 2020-12-03 14:54:55
+ * @LastEditTime: 2020-12-03 20:47:39
  */
 
 //建设银行授信机构编码 multi_classification
@@ -82,3 +82,7 @@ export const BL_BANK_TYPE_CMB = "1318fcc0-b70f-4cc3-8c5d-cc681726d2bc";
 // 工程航信-ABS
 export const BANK_TYPE_ABS = "ABS8bf19-52c2-11e8-8d90-f4066961b9de";
 export const BL_BANK_TYPE_ABS = "877e40f6-53fb-11e8-be7c-f4066961b6de"
+
+
+// 自定义cfca
+export const BANK_TYPE_CFCA = "cfca";

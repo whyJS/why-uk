@@ -3,7 +3,7 @@
  * @Author: whyjs
  * @Date: 2020-09-21 13:45:11
  * @LastEditors: whyjs
- * @LastEditTime: 2020-12-01 15:16:01
+ * @LastEditTime: 2020-12-04 16:28:34
  */
 const webpackConfig = require('./webpack.config.js')
 const {
@@ -41,16 +41,16 @@ module.exports = WebpackMerge(webpackConfig, {
         }
       })
     ],
-    splitChunks: {
-      chunks: 'all',
-      cacheGroups: {
-        libs: {
-          name: 'chunk-libs',
-          test: /[\\/]node_modules[\\/]/,
-          priority: 10,
-          chunks: 'initial' // 只打包初始时依赖的第三方
-        }
-      }
-    }
+    // splitChunks: {
+    //   chunks: 'all',
+    //   cacheGroups: {
+    //     libs: {
+    //       name: 'chunk-libs',
+    //       test: /[\\/]node_modules[\\/]/,
+    //       priority: 10,
+    //       chunks: 'initial' // 只打包初始时依赖的第三方
+    //     }
+    //   }
+    // }
   }
 })

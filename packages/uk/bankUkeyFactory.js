@@ -3,12 +3,14 @@
  * @Author: whyjs
  * @Date: 2020-12-02 17:31:27
  * @LastEditors: whyjs
- * @LastEditTime: 2020-12-03 15:43:51
+ * @LastEditTime: 2020-12-03 20:48:20
  */
 import BaseUkey from './base/base_uk.js'
 import BaseUkeySign from './base/baseUkeySign.js'
 import CcbUkey from './ccb/ccb_uk.js'
 import CcbUkeySign from './ccb/ccb_UkeySign.js'
+import CfcaUkey from './cfca/cfca_uk.js'
+import CfcaUkeySign from './cfca/cfca_UkeySign.js'
 import * as BANK_TYPE from './bankType'
 
 const aisino_bankType = [];
@@ -38,6 +40,10 @@ aisino_bankType[BANK_TYPE.BANK_TYPE_SPDB] = "SPDBCREDIT";
 //招商银行
 aisino_bankType[BANK_TYPE.BANK_TYPE_CMB] = "CMBCREDIT";
 
+// 自定义cfca
+aisino_bankType[BANK_TYPE.BANK_TYPE_CFCA] = "cfca";
+
+
 export default class bankUkeyFactory {
   constructor() {
 
@@ -55,6 +61,13 @@ export default class bankUkeyFactory {
       return ccbUkeySign;
     }
 
+    //CFCA证书
+    if ("cfca" == bankCode) {
+      var cfcaUkeySign = new CfcaUkeySign();
+      return cfcaUkeySign;
+    }
+
+
     let defaultUkey = new BaseUkeySign();
     return defaultUkey;
   }
@@ -64,6 +77,12 @@ export default class bankUkeyFactory {
     if ("CCBCREDIT" == bankCode) {
       var ccbUkey = new CcbUkey();
       return ccbUkey;
+    }
+
+    //CFCA证书
+    if ("cfca" == bankCode) {
+      var cfcaUkey = new CfcaUkey();
+      return cfcaUkey;
     }
 
     let defaultUkey = new BaseUkey();

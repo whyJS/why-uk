@@ -10,6 +10,8 @@ function signCallBack(bankCode, ukeySenceSignObject, signedCallBack) {
   return ukeyActorClass.signCallBack(bankCode, ukeySenceSignObject, signedCallBack)
 }
 
+
+
 export {
   getUkeyParams,
   signCallBack

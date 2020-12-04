@@ -55,6 +55,7 @@
     "regenerator-runtime": "^0.13.3",
     "terser-webpack-plugin": "^2.3.2",
     "uglifyjs-webpack-plugin": "^2.2.0",
+    "web-confirm": "^1.0.2",
     "webpack": "^4.41.5",
     "webpack-bundle-analyzer": "^3.6.0",
     "webpack-cli": "^3.3.10",
@@ -62,6 +63,7 @@
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
-    "js-md5": "^0.7.3"
+    "js-md5": "^0.7.3",
+    "jquery" : "^1.8.0"
   }
 }

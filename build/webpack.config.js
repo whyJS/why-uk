@@ -3,7 +3,7 @@
  * @Author: whyjs
  * @Date: 2020-09-21 13:45:11
  * @LastEditors: whyjs
- * @LastEditTime: 2020-12-03 20:19:51
+ * @LastEditTime: 2020-12-04 15:15:50
  */
 const path = require('path');
 const Webpack = require('webpack');
@@ -76,6 +76,10 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, '../examples/index.html'),
       filename: 'index.html'
+    }),
+    new Webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery'
     }),
   ]
 };
